@@ -19,14 +19,14 @@ public class UnityAndroid : MonoBehaviour
     }
 
     IEnumerator Captcha() {
+
         //ファイル名 ※カスタムDateTimeじゃないとファイル名に/と:が入って保存失敗する
         imageName = System.DateTime.Now.ToString ("gyyyyMMddtthhmmssfff") + ".png";
-        string filePass = "/Pictures/Screenshots/";
 
         //ios,Android時パスを追加
 #if !UNITY_EDITOR && UNITY_ANDROID && !UNITY_IOS
         Scan(imageName);
-        testText.text = imageName;
+        //testText.text = imageName;
 #endif
         yield return new WaitForEndOfFrame();
         //スクリーンショット
@@ -97,10 +97,20 @@ public class UnityAndroid : MonoBehaviour
         using (AndroidJavaClass jcEnvironment = new AndroidJavaClass("android.os.Environment"))
         using (AndroidJavaObject joExDir = jcEnvironment.CallStatic<AndroidJavaObject>("getExternalStorageDirectory"))
         {
-            imageName = joExDir.Call<string>("toString") + "/DCIM/100ANDRO/" + fileName;
-            testText.text = "search path : " + fileName;
+        string imageNameDirectory = joExDir.Call<string>("toString") + "/DCIM/Unipro/";
+            if (!Directory.Exists(imageNameDirectory))
+            {
+                testText.text = "search path2 : " + imageNameDirectory;
+                System.IO.Directory.CreateDirectory(imageNameDirectory);
+                testText.text = "search path3 : " + imageNameDirectory;
+                return;
+            }
+            imageName = joExDir.Call<string>("toString") + "/DCIM/Unipro/" + fileName;
+            //testText.text = "search path : " + imageName;
         }
 #endif   
     }
+
+
 
 }
