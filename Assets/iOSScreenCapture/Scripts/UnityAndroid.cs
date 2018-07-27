@@ -7,13 +7,25 @@ using System.IO;
 public class UnityAndroid : MonoBehaviour
 {
     [SerializeField] private GameObject canvas;
+    [SerializeField] private AudioClip audioClipe;
     private string imageName = "";
+    private AudioSource audioSource;
 
-	public void ScreenCapture_Android()
+    private void Start()
+    {
+        audioSource = gameObject.GetComponent<AudioSource>();
+        audioSource.clip = audioClipe;
+    }
+
+    public void ScreenCapture_Android()
     {
         //写真をとる瞬間だけUI非表示にする
+#if !UNITY_EDITOR && UNITY_ANDROID && !UNITY_IOS
+        var mediaActionSound = new AndroidJavaObject("android.media.MediaActionSound");
+        mediaActionSound.Call("play", mediaActionSound.GetStatic<int>("SHUTTER_CLICK"));
         canvas.SetActive(false);
         StartCoroutine("Captcha");
+#endif
     }
 
     IEnumerator Captcha() {
